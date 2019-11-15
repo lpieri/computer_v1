@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/15 12:33:20 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/15 13:02:53 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,16 +27,18 @@ class Polynomial:
 	def solve_equation(self):
 		if self.max_power > 2:
 			return print ("The polynomial degree is stricly greater than 2, I can't solve.")
-		delta = (self._b * self._b) - (4 * self._a * self._c)
-		print (delta)
-		if delta > 0:
-			print ("Discriminant is strictly positive, the two solutions are:")
-			# self.__calc_2_sol(delta)
-		elif delta == 0:
+		elif self.max_power == 2:
+			delta = (self._b * self._b) - (4 * self._a * self._c)
+			if delta > 0:
+				self.__solve_2_solution(delta)
+			elif delta == 0:
+				self.__solve_1_solution(delta)
+			else:
+				return print ("Discriminant is strictly negative, there is no solution.")
+		elif self.max_power == 1:
 			print ("The solution is:")
-			# self.__calc_1_sol(delta)
-		else:
-			return print ("Discriminant is strictly negative, there is no solution.")
+			sol = -self._c / self._b
+			print (sol)
 
 	def parse_equation(self):
 		neg = re.findall(r"X\^-", self.__equation)
@@ -46,7 +48,7 @@ class Polynomial:
 		self.start_egal = self.__equation.split(" = ")[1]
 		max_power, pows = self.__find_max_power()
 		self.max_power = max_power
-		self.__reduct_core(pows)
+		self.__reduct_equation(pows)
 		print ("Polynomial degree: {p}".format(p=max_power))
 
 	def __find_max_power(self):
@@ -84,10 +86,11 @@ class Polynomial:
 			egal_is_float = re.search(r"(\.)", egal_power_int)
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
+			self.__save_int_by_p(reduct_int, _power_of)
 			return "{int} * X^{power}".format(int=reduct_int, power=_power_of)
 		return core_power
 
-	def	__reduct_core(self, powers):
+	def	__reduct_equation(self, powers):
 		reduct_equation = ""
 		for p in powers:
 			core_power = self.__reduct_power(p)
@@ -95,3 +98,15 @@ class Polynomial:
 		reduct_equation += " = 0"
 		self.reduct_equation = reduct_equation
 		print ("Reduced form:{eq}".format(eq=reduct_equation))
+
+	def __solve_2_solution(self, delta):
+		print ("Discriminant is strictly positive, the two solutions are:")
+		solution_1 = (-self._b - math.sqrt(delta)) / (2 * self._a)
+		solution_2 = (-self._b + math.sqrt(delta)) / (2 * self._a)
+		print (round(solution_1, 6))
+		print (round(solution_2, 6))
+
+	def __solve_1_solution(self, delta):
+		print ("The solution is:")
+		solution = -self._b / (2 * self._a)
+		print (solution)
