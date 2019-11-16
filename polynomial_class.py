@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/16 09:35:43 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/16 09:45:17 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,8 @@ class Polynomial:
 			print ("The solution is:")
 			sol = -self._c / self._b
 			print (sol)
+		else:
+			print ("The polynomial degree is egal to 0, I can't solve.")
 
 	def parse_equation(self):
 		neg = re.findall(r"[X|x]\^-", self.__equation)
@@ -86,7 +88,7 @@ class Polynomial:
 
 	def __reduct_power(self, _power_of):
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
-		regex_int = r"((\+|\-)(\s+)?)?((\d.)?\d+)"
+		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
 		core_power_int = re.sub(r"\s+", "", re.match(regex_int, core_power).group())
 		core_is_float = re.search(r"(\.)", core_power_int)
