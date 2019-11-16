@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/16 08:32:35 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/16 09:00:30 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,21 +46,33 @@ class Polynomial:
 			exit_error("The polynomial equation is not valid!")
 		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
 		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
-		max_power, pows = self.__find_max_power()
-		self.max_power = max_power
+		pows = self.__parse_select_pows()
 		self.__reduct_equation(pows)
+		self.__parse_get_degree()
+
+	def __parse_get_degree(self):
+		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^\d))", self.reduct_equation)
+		max_power = 0
+		for power in powers:
+			power = power[0].split(' ')
+			value = power[0]
+			if int(value):
+				power = power[2]
+				p = int(power.split('^')[1])
+				if (p > max_power):
+					max_power = p
+			else:
+				continue
+		self.max_power = max_power
 		print ("Polynomial degree: {p}".format(p=max_power))
 
-	def __find_max_power(self):
+	def __parse_select_pows(self):
 		powers = re.findall(r"([X|x]\^\d)", self.core_equation)
-		max_power = 0
 		pows = []
 		for power in powers:
 			p = int(power.split('^')[1])
 			pows.append(p)
-			if p > max_power:
-				max_power = p
-		return max_power, pows
+		return pows
 
 	def __save_int_by_p(self, _value, _power_of,):
 		if _power_of == 0:
@@ -87,7 +99,9 @@ class Polynomial:
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
 			self.__save_int_by_p(reduct_int, _power_of)
-			return "{int} * X^{power}".format(int=reduct_int, power=_power_of)
+			if reduct_int != 0:
+				return "{int} * X^{power}".format(int=reduct_int, power=_power_of)
+			return "+ {int} * X^{power}".format(int=reduct_int, power=_power_of)
 		return core_power
 
 	def	__reduct_equation(self, powers):
