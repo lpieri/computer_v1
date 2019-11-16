@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/16 09:00:30 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/16 09:09:16 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -101,17 +101,18 @@ class Polynomial:
 			self.__save_int_by_p(reduct_int, _power_of)
 			if reduct_int != 0:
 				return "{int} * X^{power}".format(int=reduct_int, power=_power_of)
-			return "+ {int} * X^{power}".format(int=reduct_int, power=_power_of)
+			return
 		return core_power
 
 	def	__reduct_equation(self, powers):
 		reduct_equation = ""
 		for p in powers:
 			core_power = self.__reduct_power(p)
-			reduct_equation += " {power}".format(power=core_power)
-		reduct_equation += " = 0"
+			if core_power:
+				reduct_equation += "{power} ".format(power=core_power)
+		reduct_equation += "= 0"
 		self.reduct_equation = reduct_equation
-		print ("Reduced form:{eq}".format(eq=reduct_equation))
+		print ("Reduced form: {eq}".format(eq=reduct_equation))
 
 	def __solve_2_solution(self, delta):
 		print ("Discriminant is strictly positive, the two solutions are:")
