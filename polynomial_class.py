@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/15 13:02:53 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/16 08:32:35 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,18 +41,18 @@ class Polynomial:
 			print (sol)
 
 	def parse_equation(self):
-		neg = re.findall(r"X\^-", self.__equation)
+		neg = re.findall(r"[X|x]\^-", self.__equation)
 		if neg:
 			exit_error("The polynomial equation is not valid!")
-		self.core_equation = self.__equation.split(" = ")[0]
-		self.start_egal = self.__equation.split(" = ")[1]
+		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
+		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
 		max_power, pows = self.__find_max_power()
 		self.max_power = max_power
 		self.__reduct_equation(pows)
 		print ("Polynomial degree: {p}".format(p=max_power))
 
 	def __find_max_power(self):
-		powers = re.findall(r"(X\^\d)", self.core_equation)
+		powers = re.findall(r"([X|x]\^\d)", self.core_equation)
 		max_power = 0
 		pows = []
 		for power in powers:
@@ -73,7 +73,7 @@ class Polynomial:
 			return
 
 	def __reduct_power(self, _power_of):
-		regex_power = r"((\+|\-)\s)?((\d.)?\d+)\s\*\sX\^{power}".format(power=_power_of)
+		regex_power = r"((\+|\-)\s)?((\d.)?\d+)\s\*\s[X|x]\^{power}".format(power=_power_of)
 		regex_int = r"((\+|\-)\s)?((\d.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
 		core_power_int = re.sub(r"\s+", "", re.match(regex_int, core_power).group())
