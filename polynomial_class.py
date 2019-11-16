@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/16 09:09:16 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/16 09:35:43 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,10 +54,10 @@ class Polynomial:
 		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^\d))", self.reduct_equation)
 		max_power = 0
 		for power in powers:
-			power = power[0].split(' ')
+			power = re.split(r"((\s+)?\*(\s+)?)", power[0])
 			value = power[0]
 			if int(value):
-				power = power[2]
+				power = power[4]
 				p = int(power.split('^')[1])
 				if (p > max_power):
 					max_power = p
@@ -85,8 +85,8 @@ class Polynomial:
 			return
 
 	def __reduct_power(self, _power_of):
-		regex_power = r"((\+|\-)\s)?((\d.)?\d+)\s\*\s[X|x]\^{power}".format(power=_power_of)
-		regex_int = r"((\+|\-)\s)?((\d.)?\d+)"
+		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
+		regex_int = r"((\+|\-)(\s+)?)?((\d.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
 		core_power_int = re.sub(r"\s+", "", re.match(regex_int, core_power).group())
 		core_is_float = re.search(r"(\.)", core_power_int)
