@@ -6,12 +6,11 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/16 09:45:17 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/19 18:58:57 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
-import math
 from utils import *
 
 class Polynomial:
@@ -40,7 +39,10 @@ class Polynomial:
 			sol = -self._c / self._b
 			print (sol)
 		else:
-			print ("The polynomial degree is egal to 0, I can't solve.")
+			if self._c == 0:
+				print ("The solution of the equation are all the real numbers !")
+			else:
+				print ("There is no solution to the equation !")
 
 	def parse_equation(self):
 		neg = re.findall(r"[X|x]\^-", self.__equation)
@@ -51,6 +53,9 @@ class Polynomial:
 		pows = self.__parse_select_pows()
 		self.__reduct_equation(pows)
 		self.__parse_get_degree()
+
+	def __parse_natural_eq(self):
+		pass
 
 	def __parse_get_degree(self):
 		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^\d))", self.reduct_equation)
@@ -108,18 +113,21 @@ class Polynomial:
 
 	def	__reduct_equation(self, powers):
 		reduct_equation = ""
+		max_p = max(powers)
 		for p in powers:
 			core_power = self.__reduct_power(p)
 			if core_power:
 				reduct_equation += "{power} ".format(power=core_power)
+			elif not core_power and max_p == 0:
+				reduct_equation += "0 "
 		reduct_equation += "= 0"
 		self.reduct_equation = reduct_equation
 		print ("Reduced form: {eq}".format(eq=reduct_equation))
 
 	def __solve_2_solution(self, delta):
 		print ("Discriminant is strictly positive, the two solutions are:")
-		solution_1 = (-self._b - math.sqrt(delta)) / (2 * self._a)
-		solution_2 = (-self._b + math.sqrt(delta)) / (2 * self._a)
+		solution_1 = (-self._b - ft_sqrt(delta)) / (2 * self._a)
+		solution_2 = (-self._b + ft_sqrt(delta)) / (2 * self._a)
 		print (round(solution_1, 6))
 		print (round(solution_2, 6))
 
