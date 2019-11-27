@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/19 18:58:57 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/27 12:56:53 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ class Polynomial:
 			elif delta == 0:
 				self.__solve_1_solution(delta)
 			else:
-				return print ("Discriminant is strictly negative, there is no solution.")
+				self.__solve_no_real_solution(delta)
 		elif self.max_power == 1:
 			print ("The solution is:")
 			sol = -self._c / self._b
@@ -58,7 +58,7 @@ class Polynomial:
 		pass
 
 	def __parse_get_degree(self):
-		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^\d))", self.reduct_equation)
+		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
 		max_power = 0
 		for power in powers:
 			power = re.split(r"((\s+)?\*(\s+)?)", power[0])
@@ -74,10 +74,11 @@ class Polynomial:
 		print ("Polynomial degree: {p}".format(p=max_power))
 
 	def __parse_select_pows(self):
-		powers = re.findall(r"([X|x]\^\d)", self.core_equation)
+		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", self.core_equation)
 		pows = []
 		for power in powers:
-			p = int(power.split('^')[1])
+			p = re.split(r"(\^)", power[0])
+			p = int(p[2])
 			pows.append(p)
 		return pows
 
@@ -91,7 +92,8 @@ class Polynomial:
 		else:
 			return
 
-	def __reduct_power(self, _power_of):
+	def __reduct_power(self, _power_of, _first):
+		space = '' if _first == 0 else ' '
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
 		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
@@ -106,21 +108,28 @@ class Polynomial:
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
 			self.__save_int_by_p(reduct_int, _power_of)
-			if reduct_int != 0:
-				return "{int} * X^{power}".format(int=reduct_int, power=_power_of)
-			return
+			print (reduct_int)
+			if reduct_int > 0:
+				return "{space}+ {int} * X^{power}".format(space=space, int=reduct_int, power=_power_of)
+			elif reduct_int < 0:
+				reduct_int = ft_abs(reduct_int)
+				return "{space}- {int} * X^{power}".format(space=space, int=reduct_int, power=_power_of)
+			elif reduct_int == 0:
+				return
 		return core_power
 
 	def	__reduct_equation(self, powers):
 		reduct_equation = ""
+		first = 0
 		max_p = max(powers)
 		for p in powers:
-			core_power = self.__reduct_power(p)
+			core_power = self.__reduct_power(p, first)
 			if core_power:
-				reduct_equation += "{power} ".format(power=core_power)
-			elif not core_power and max_p == 0:
+				reduct_equation += "{power}".format(power=core_power)
+			elif not core_power and first == len(powers):
 				reduct_equation += "0 "
-		reduct_equation += "= 0"
+			first += 1
+		reduct_equation += " = 0"
 		self.reduct_equation = reduct_equation
 		print ("Reduced form: {eq}".format(eq=reduct_equation))
 
@@ -135,3 +144,6 @@ class Polynomial:
 		print ("The solution is:")
 		solution = -self._b / (2 * self._a)
 		print (solution)
+
+	def __solve_no_real_solution(self, delta):
+		return print ("Discriminant is strictly negative, there is no solution.")
