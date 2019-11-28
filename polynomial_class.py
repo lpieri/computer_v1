@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/27 12:56:53 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/28 17:38:48 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -135,8 +135,8 @@ class Polynomial:
 
 	def __solve_2_solution(self, delta):
 		print ("Discriminant is strictly positive, the two solutions are:")
-		solution_1 = (-self._b - ft_sqrt(delta)) / (2 * self._a)
-		solution_2 = (-self._b + ft_sqrt(delta)) / (2 * self._a)
+		solution_1 = (-self._b - (delta ** 0.5)) / (2 * self._a)
+		solution_2 = (-self._b + (delta ** 0.5)) / (2 * self._a)
 		print (round(solution_1, 6))
 		print (round(solution_2, 6))
 
@@ -146,4 +146,8 @@ class Polynomial:
 		print (solution)
 
 	def __solve_no_real_solution(self, delta):
-		return print ("Discriminant is strictly negative, there is no solution.")
+		print ("Discriminant is strictly negative, the two solutions are:")
+		solution_1 = (-self._b - (ft_abs(delta)) ** 0.5) / (2 * self._a)
+		solution_2 = (-self._b + (ft_abs(delta)) ** 0.5) / (2 * self._a)
+		print ("{sol_1}i".format(sol_1=round(solution_1, 6)))
+		print ("{sol_2}i".format(sol_2=round(solution_2, 6)))
