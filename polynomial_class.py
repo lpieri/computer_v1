@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/29 14:07:56 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/29 14:33:08 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -96,6 +96,7 @@ class Polynomial:
 
 	def __reduct_power(self, _power_of, _first):
 		space = '' if _first == 0 else ' '
+		signe = '' if _first == 0 else '+ '
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
 		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
@@ -111,13 +112,12 @@ class Polynomial:
 			reduct_int = core_power_int - egal_power_int
 			self.__save_int_by_p(reduct_int, _power_of)
 			# print (reduct_int)
-			if reduct_int > 0:
-				return "{space}+ {int} * X^{power}".format(space=space, int=reduct_int, power=_power_of)
-			elif reduct_int < 0:
+			if reduct_int < 0:
 				reduct_int = ft_abs(reduct_int)
-				return "{space}- {int} * X^{power}".format(space=space, int=reduct_int, power=_power_of)
+				signe = '- '
 			elif reduct_int == 0:
 				return
+			return f"{space}{signe}{reduct_int} * X^{_power_of}"
 		return core_power
 
 	def	__reduct_equation(self, powers):
