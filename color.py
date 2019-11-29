@@ -1,29 +1,23 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    utils.py                                           :+:      :+:    :+:    #
+#    color.py                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/09/17 20:44:50 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/29 12:04:14 by cpieri           ###   ########.fr        #
+#    Created: 2019/11/29 11:39:12 by cpieri            #+#    #+#              #
+#    Updated: 2019/11/29 12:16:13 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-import sys
-from color import *
+class	Color:
 
-def	ft_abs(nb):
-	if nb < 0:
-		nb = nb * -1
-	return nb
-
-def ft_sqrt(nb):
-	sqrt = 1
-	while sqrt * sqrt < nb:
-		sqrt += 1
-	return sqrt
-
-def exit_error(error):
-	print("{prog} - error: {err}".format(prog=sys.argv[0], err=error))
-	sys.exit(-1)
+	def	__init__(self):
+		self.none = "\033[0m"
+		self.red = "\033[31m"
+		self.green = "\033[32m"
+		self.yellow = "\033[33m"
+		self.blue = "\033[34m"
+		self.magenta = "\033[35m"
+		self.cyan = "\033[36m"
+		self.pink = "\033[38;5;206m"

@@ -6,26 +6,28 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/28 17:38:48 by cpieri           ###   ########.fr        #
+#    Updated: 2019/11/29 14:07:56 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
 from utils import *
+from color import Color
 
 class Polynomial:
 
 	def __init__(self, equation):
+		self.color = Color()
 		self.__equation = equation
-		self._a = 0
-		self._b = 0
-		self._c = 0
+		self._a = None
+		self._b = None
+		self._c = None
 		self.parse_equation()
 		self.solve_equation()
 
 	def solve_equation(self):
 		if self.max_power > 2:
-			return print ("The polynomial degree is stricly greater than 2, I can't solve.")
+			return print (f"{self.color.red}The polynomial degree is stricly greater than 2, I can't solve.{self.color.none}")
 		elif self.max_power == 2:
 			delta = (self._b * self._b) - (4 * self._a * self._c)
 			if delta > 0:
@@ -35,19 +37,19 @@ class Polynomial:
 			else:
 				self.__solve_no_real_solution(delta)
 		elif self.max_power == 1:
-			print ("The solution is:")
+			print (f"{self.color.green}The solution is:{self.color.none}")
 			sol = -self._c / self._b
-			print (sol)
+			print (f"{self.color.yellow}{sol}{self.color.none}")
 		else:
 			if self._c == 0:
-				print ("The solution of the equation are all the real numbers !")
+				print (f"{self.color.green}The solution of the equation are all the real numbers !{self.color.none}")
 			else:
-				print ("There is no solution to the equation !")
+				print (f"{self.color.red}There is no solution to the equation !{self.color.none}")
 
 	def parse_equation(self):
 		neg = re.findall(r"[X|x]\^-", self.__equation)
 		if neg:
-			exit_error("The polynomial equation is not valid!")
+			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
 		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
 		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
 		pows = self.__parse_select_pows()
@@ -71,7 +73,7 @@ class Polynomial:
 			else:
 				continue
 		self.max_power = max_power
-		print ("Polynomial degree: {p}".format(p=max_power))
+		print (f"{self.color.cyan}Polynomial degree: {self.color.blue}{max_power}{self.color.none}")
 
 	def __parse_select_pows(self):
 		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", self.core_equation)
@@ -108,7 +110,7 @@ class Polynomial:
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
 			self.__save_int_by_p(reduct_int, _power_of)
-			print (reduct_int)
+			# print (reduct_int)
 			if reduct_int > 0:
 				return "{space}+ {int} * X^{power}".format(space=space, int=reduct_int, power=_power_of)
 			elif reduct_int < 0:
@@ -126,28 +128,28 @@ class Polynomial:
 			core_power = self.__reduct_power(p, first)
 			if core_power:
 				reduct_equation += "{power}".format(power=core_power)
-			elif not core_power and first == len(powers):
-				reduct_equation += "0 "
+			elif not core_power and self._a == 0 and self._b == 0 and self._c == 0:
+				reduct_equation += "0"
 			first += 1
 		reduct_equation += " = 0"
 		self.reduct_equation = reduct_equation
-		print ("Reduced form: {eq}".format(eq=reduct_equation))
+		print (f"{self.color.magenta}Reduced form: {self.color.pink}{reduct_equation}{self.color.none}")
 
 	def __solve_2_solution(self, delta):
-		print ("Discriminant is strictly positive, the two solutions are:")
+		print (f"{self.color.green}Discriminant is strictly positive, the two solutions are:{self.color.none}")
 		solution_1 = (-self._b - (delta ** 0.5)) / (2 * self._a)
 		solution_2 = (-self._b + (delta ** 0.5)) / (2 * self._a)
-		print (round(solution_1, 6))
-		print (round(solution_2, 6))
+		print (f"{self.color.yellow}{round(solution_1, 6)}{self.color.none}")
+		print (f"{self.color.yellow}{round(solution_2, 6)}{self.color.none}")
 
 	def __solve_1_solution(self, delta):
-		print ("The solution is:")
+		print (f"{self.color.green}The solution is:{self.color.none}")
 		solution = -self._b / (2 * self._a)
 		print (solution)
 
 	def __solve_no_real_solution(self, delta):
-		print ("Discriminant is strictly negative, the two solutions are:")
+		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
 		solution_1 = (-self._b - (ft_abs(delta)) ** 0.5) / (2 * self._a)
 		solution_2 = (-self._b + (ft_abs(delta)) ** 0.5) / (2 * self._a)
-		print ("{sol_1}i".format(sol_1=round(solution_1, 6)))
-		print ("{sol_2}i".format(sol_2=round(solution_2, 6)))
+		print (f"{self.color.yellow}{round(solution_1, 6)}i{self.color.none}")
+		print (f"{self.color.yellow}{round(solution_2, 6)}i{self.color.none}")
