@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/11/29 14:33:08 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/02 10:22:57 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,9 +55,6 @@ class Polynomial:
 		pows = self.__parse_select_pows()
 		self.__reduct_equation(pows)
 		self.__parse_get_degree()
-
-	def __parse_natural_eq(self):
-		pass
 
 	def __parse_get_degree(self):
 		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
@@ -111,13 +108,17 @@ class Polynomial:
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
 			self.__save_int_by_p(reduct_int, _power_of)
-			# print (reduct_int)
 			if reduct_int < 0:
 				reduct_int = ft_abs(reduct_int)
 				signe = '- '
 			elif reduct_int == 0:
 				return
 			return f"{space}{signe}{reduct_int} * X^{_power_of}"
+		if _first == 0:
+			if core_power_int >= 0:
+				core_power = re.sub(r"(\s)?\+(\s)?", "", core_power)
+			else:
+				core_power = re.sub(r"(\s)?", "", core_power, count=1)
 		return core_power
 
 	def	__reduct_equation(self, powers):
