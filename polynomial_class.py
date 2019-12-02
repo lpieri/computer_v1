@@ -6,13 +6,14 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/02 10:22:57 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/02 13:30:19 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
 from utils import *
 from color import Color
+from collections import OrderedDict
 
 class Polynomial:
 
@@ -46,9 +47,29 @@ class Polynomial:
 			else:
 				print (f"{self.color.red}There is no solution to the equation !{self.color.none}")
 
+	def __solve_2_solution(self, delta):
+		print (f"{self.color.green}Discriminant is strictly positive, the two solutions are:{self.color.none}")
+		solution_1 = (-self._b - (delta ** 0.5)) / (2 * self._a)
+		solution_2 = (-self._b + (delta ** 0.5)) / (2 * self._a)
+		print (f"{self.color.yellow}{round(solution_1, 6)}{self.color.none}")
+		print (f"{self.color.yellow}{round(solution_2, 6)}{self.color.none}")
+
+	def __solve_1_solution(self, delta):
+		print (f"{self.color.green}The solution is:{self.color.none}")
+		solution = -self._b / (2 * self._a)
+		print (solution)
+
+	def __solve_no_real_solution(self, delta):
+		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
+		solution_1 = (-self._b - (ft_abs(delta)) ** 0.5) / (2 * self._a)
+		solution_2 = (-self._b + (ft_abs(delta)) ** 0.5) / (2 * self._a)
+		print (f"{self.color.yellow}{round(solution_1, 6)}i{self.color.none}")
+		print (f"{self.color.yellow}{round(solution_2, 6)}i{self.color.none}")
+
 	def parse_equation(self):
-		neg = re.findall(r"[X|x]\^-", self.__equation)
-		if neg:
+		neg = re.findall(r"[X|x]\^\-", self.__equation)
+		fpow = re.findall(r"[X|x]\^(\d+\.\d+)", self.__equation)
+		if neg or fpow:
 			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
 		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
 		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
@@ -57,7 +78,7 @@ class Polynomial:
 		self.__parse_get_degree()
 
 	def __parse_get_degree(self):
-		powers = re.findall(r"(\d(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
+		powers = re.findall(r"((\d+)(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
 		max_power = 0
 		for power in powers:
 			power = re.split(r"((\s+)?\*(\s+)?)", power[0])
@@ -72,8 +93,10 @@ class Polynomial:
 		self.max_power = max_power
 		print (f"{self.color.cyan}Polynomial degree: {self.color.blue}{max_power}{self.color.none}")
 
-	def __parse_select_pows(self):
-		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", self.core_equation)
+	def __parse_select_pows(self, eq=None):
+		if eq == None:
+			eq = self.core_equation
+		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", eq)
 		pows = []
 		for power in powers:
 			p = re.split(r"(\^)", power[0])
@@ -97,6 +120,7 @@ class Polynomial:
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
 		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation).group()
+		self.core_equation = self.core_equation[len(core_power)::]
 		core_power_int = re.sub(r"\s+", "", re.match(regex_int, core_power).group())
 		core_is_float = re.search(r"(\.)", core_power_int)
 		core_power_int = float(core_power_int) if core_is_float else int(core_power_int)
@@ -107,6 +131,7 @@ class Polynomial:
 			egal_is_float = re.search(r"(\.)", egal_power_int)
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
+			self.start_egal = re.sub(regex_power, "", egal_power.group())
 			self.__save_int_by_p(reduct_int, _power_of)
 			if reduct_int < 0:
 				reduct_int = ft_abs(reduct_int)
@@ -121,6 +146,30 @@ class Polynomial:
 				core_power = re.sub(r"(\s)?", "", core_power, count=1)
 		return core_power
 
+	def	__re_reduct_core(self):
+		pows = self.__parse_select_pows(self.reduct_equation)
+		first = 0
+		for p in pows:
+			space = '' if first == 0 else ' '
+			regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power})".format(power=p)
+			# print (p)
+			core_power = re.findall(regex_power, self.reduct_equation)
+			new_power_int = 0
+			if len(core_power) > 1:
+				for nb in core_power:
+					nb_val = nb[5]
+					core_is_float = re.search(r"(\.)", nb_val)
+					nb_val = float(nb_val) if core_is_float else int(nb_val)
+					signe = nb[3]
+					if signe == '-':
+						nb_val = -nb_val
+					new_power_int += nb_val
+				new_reduct_power = f"{space}{new_power_int} * X^{p}"
+				self.reduct_equation = re.sub(regex_power, '', self.reduct_equation, len(core_power) - 1)
+				self.reduct_equation = re.sub(regex_power, new_reduct_power, self.reduct_equation, 1)
+			pows.remove(p)
+			first += 1
+
 	def	__reduct_equation(self, powers):
 		reduct_equation = ""
 		first = 0
@@ -129,28 +178,10 @@ class Polynomial:
 			core_power = self.__reduct_power(p, first)
 			if core_power:
 				reduct_equation += "{power}".format(power=core_power)
-			elif not core_power and self._a == 0 and self._b == 0 and self._c == 0:
-				reduct_equation += "0"
 			first += 1
+		if not self._a and not self._b and not self._c:
+			reduct_equation += "0"
 		reduct_equation += " = 0"
 		self.reduct_equation = reduct_equation
-		print (f"{self.color.magenta}Reduced form: {self.color.pink}{reduct_equation}{self.color.none}")
-
-	def __solve_2_solution(self, delta):
-		print (f"{self.color.green}Discriminant is strictly positive, the two solutions are:{self.color.none}")
-		solution_1 = (-self._b - (delta ** 0.5)) / (2 * self._a)
-		solution_2 = (-self._b + (delta ** 0.5)) / (2 * self._a)
-		print (f"{self.color.yellow}{round(solution_1, 6)}{self.color.none}")
-		print (f"{self.color.yellow}{round(solution_2, 6)}{self.color.none}")
-
-	def __solve_1_solution(self, delta):
-		print (f"{self.color.green}The solution is:{self.color.none}")
-		solution = -self._b / (2 * self._a)
-		print (solution)
-
-	def __solve_no_real_solution(self, delta):
-		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
-		solution_1 = (-self._b - (ft_abs(delta)) ** 0.5) / (2 * self._a)
-		solution_2 = (-self._b + (ft_abs(delta)) ** 0.5) / (2 * self._a)
-		print (f"{self.color.yellow}{round(solution_1, 6)}i{self.color.none}")
-		print (f"{self.color.yellow}{round(solution_2, 6)}i{self.color.none}")
+		self.__re_reduct_core()
+		print (f"{self.color.magenta}Reduced form: {self.color.pink}{self.reduct_equation}{self.color.none}")
