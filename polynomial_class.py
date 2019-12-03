@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/02 13:30:19 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/03 10:36:34 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -131,7 +131,7 @@ class Polynomial:
 			egal_is_float = re.search(r"(\.)", egal_power_int)
 			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
 			reduct_int = core_power_int - egal_power_int
-			self.start_egal = re.sub(regex_power, "", egal_power.group())
+			self.start_egal = re.sub(regex_power.format(power=_power_of), "", self.start_egal, 1)
 			self.__save_int_by_p(reduct_int, _power_of)
 			if reduct_int < 0:
 				reduct_int = ft_abs(reduct_int)
