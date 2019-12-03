@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/03 10:36:34 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/03 10:58:09 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,13 +69,23 @@ class Polynomial:
 	def parse_equation(self):
 		neg = re.findall(r"[X|x]\^\-", self.__equation)
 		fpow = re.findall(r"[X|x]\^(\d+\.\d+)", self.__equation)
-		if neg or fpow:
+		check_validity = self.__check_validity()
+		if neg or fpow or check_validity:
 			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
 		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
 		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
 		pows = self.__parse_select_pows()
 		self.__reduct_equation(pows)
 		self.__parse_get_degree()
+
+	def __check_validity(self):
+		regex = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^(\d+)"
+		sub_all_power = re.sub(regex, "", self.__equation)
+		sub_equal = re.sub(r"(\s)?=(\s)?", "", sub_all_power)
+		error = sub_equal
+		if error and error != '0':
+			return True
+		return False
 
 	def __parse_get_degree(self):
 		powers = re.findall(r"((\d+)(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
