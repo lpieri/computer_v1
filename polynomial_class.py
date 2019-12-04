@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/04 14:04:12 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/04 14:23:37 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ class Polynomial:
 			sol = -self._c / self._b
 			print (f"{self.color.yellow}{sol}{self.color.none}")
 		else:
-			if self._c == 0:
+			if not self._c:
 				print (f"{self.color.green}The solution of the equation are all the real numbers !{self.color.none}")
 			else:
 				print (f"{self.color.red}There is no solution to the equation !{self.color.none}")
@@ -56,14 +56,17 @@ class Polynomial:
 	def __solve_1_solution(self, delta):
 		print (f"{self.color.green}The solution is:{self.color.none}")
 		solution = -self._b / (2 * self._a)
-		print (solution)
+		print (f"{self.color.yellow}{solution}{self.color.none}")
 
 	def __solve_no_real_solution(self, delta):
 		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
-		solution_1 = (-self._b - (ft_abs(delta)) ** 0.5) / (2 * self._a)
-		solution_2 = (-self._b + (ft_abs(delta)) ** 0.5) / (2 * self._a)
-		print (f"{self.color.yellow}{round(solution_1, 6)}i{self.color.none}")
-		print (f"{self.color.yellow}{round(solution_2, 6)}i{self.color.none}")
+		a = (2 * self._a)
+		i = round((ft_abs(delta) ** 0.5) / a, 6)
+		b = -self._b / a
+		solution_1 = f"{b} - {i}i"
+		solution_2 = f"{b} + {i}i"
+		print (f"{self.color.yellow}{solution_1}{self.color.none}")
+		print (f"{self.color.yellow}{solution_2}{self.color.none}")
 
 	def parse_equation(self):
 		neg = re.findall(r"[X|x]\^\-", self.__equation)
@@ -127,7 +130,6 @@ class Polynomial:
 		space = '' if _first == 0 else ' '
 		signe = '' if _first == 0 else '+ '
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
-		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
 		core_power = re.search(regex_power, self.core_equation)
 		egal_power = re.search(regex_power, self.start_egal)
 		if core_power:
@@ -156,7 +158,12 @@ class Polynomial:
 		elif not core_power and egal_power:
 			egal_power = egal_power.group()
 			egal_power_int = get_int(egal_power)
-			print (egal_power_int)
+			egal_power_int *= -1
+			self.__save_int_by_p(egal_power_int, _power_of)
+			if egal_power_int < 0:
+				egal_power_int = ft_abs(egal_power_int)
+				signe = '- '
+			return f"{space}{signe}{egal_power_int} * X^{_power_of}"
 
 
 	def	__re_reduct_core(self):
@@ -186,7 +193,6 @@ class Polynomial:
 		reduct_equation = ""
 		first = 0
 		max_p = max(powers)
-		print ("powers:", powers)
 		for p in powers:
 			core_power = self.__reduct_power(p, first)
 			if core_power:
