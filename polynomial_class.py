@@ -6,14 +6,13 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/03 10:58:09 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/04 14:04:12 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
 from utils import *
 from color import Color
-from collections import OrderedDict
 
 class Polynomial:
 
@@ -105,7 +104,7 @@ class Polynomial:
 
 	def __parse_select_pows(self, eq=None):
 		if eq == None:
-			eq = self.core_equation
+			eq = self.__equation
 		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", eq)
 		pows = []
 		for power in powers:
@@ -129,32 +128,36 @@ class Polynomial:
 		signe = '' if _first == 0 else '+ '
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
 		regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"
-		core_power = re.search(regex_power, self.core_equation).group()
-		self.core_equation = self.core_equation[len(core_power)::]
-		core_power_int = re.sub(r"\s+", "", re.match(regex_int, core_power).group())
-		core_is_float = re.search(r"(\.)", core_power_int)
-		core_power_int = float(core_power_int) if core_is_float else int(core_power_int)
-		self.__save_int_by_p(core_power_int, _power_of)
+		core_power = re.search(regex_power, self.core_equation)
 		egal_power = re.search(regex_power, self.start_egal)
-		if egal_power:
-			egal_power_int = re.sub(r"\s+", "", re.match(regex_int, egal_power.group()).group())
-			egal_is_float = re.search(r"(\.)", egal_power_int)
-			egal_power_int = float(egal_power_int) if egal_is_float else int(egal_power_int)
-			reduct_int = core_power_int - egal_power_int
-			self.start_egal = re.sub(regex_power.format(power=_power_of), "", self.start_egal, 1)
-			self.__save_int_by_p(reduct_int, _power_of)
-			if reduct_int < 0:
-				reduct_int = ft_abs(reduct_int)
-				signe = '- '
-			elif reduct_int == 0:
-				return
-			return f"{space}{signe}{reduct_int} * X^{_power_of}"
-		if _first == 0:
-			if core_power_int >= 0:
-				core_power = re.sub(r"(\s)?\+(\s)?", "", core_power)
-			else:
-				core_power = re.sub(r"(\s)?", "", core_power, count=1)
-		return core_power
+		if core_power:
+			core_power = core_power.group()
+			self.core_equation = self.core_equation[len(core_power)::]
+			core_power_int = get_int(core_power)
+			self.__save_int_by_p(core_power_int, _power_of)
+			if egal_power:
+				egal_power = egal_power.group()
+				egal_power_int = get_int(egal_power)
+				reduct_int = core_power_int - egal_power_int
+				self.start_egal = re.sub(regex_power.format(power=_power_of), "", self.start_egal, 1)
+				self.__save_int_by_p(reduct_int, _power_of)
+				if reduct_int < 0:
+					reduct_int = ft_abs(reduct_int)
+					signe = '- '
+				elif reduct_int == 0:
+					return
+				return f"{space}{signe}{reduct_int} * X^{_power_of}"
+			if _first == 0:
+				if core_power_int >= 0:
+					core_power = re.sub(r"(\s)?\+(\s)?", "", core_power)
+				else:
+					core_power = re.sub(r"(\s)?", "", core_power, count=1)
+			return core_power
+		elif not core_power and egal_power:
+			egal_power = egal_power.group()
+			egal_power_int = get_int(egal_power)
+			print (egal_power_int)
+
 
 	def	__re_reduct_core(self):
 		pows = self.__parse_select_pows(self.reduct_equation)
@@ -162,7 +165,6 @@ class Polynomial:
 		for p in pows:
 			space = '' if first == 0 else ' '
 			regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power})".format(power=p)
-			# print (p)
 			core_power = re.findall(regex_power, self.reduct_equation)
 			new_power_int = 0
 			if len(core_power) > 1:
@@ -184,6 +186,7 @@ class Polynomial:
 		reduct_equation = ""
 		first = 0
 		max_p = max(powers)
+		print ("powers:", powers)
 		for p in powers:
 			core_power = self.__reduct_power(p, first)
 			if core_power:
