@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/09 11:46:29 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/09 11:51:48 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,9 +76,12 @@ class Polynomial:
 			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
 		self.core_equation = re.split(r"(\s)?=(\s)?", self.__equation)[0]
 		self.start_egal = re.split(r"(\s)?=(\s)?", self.__equation)[3]
-		pows = self.__parse_select_pows()
-		self.__reduct_equation(pows)
-		self.__parse_get_degree()
+		if self.core_equation and self.start_egal:
+			pows = self.__parse_select_pows()
+			self.__reduct_equation(pows)
+			self.__parse_get_degree()
+		else:
+			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
 
 	def __check_validity(self):
 		regex = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^(\d+)"
