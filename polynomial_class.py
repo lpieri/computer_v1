@@ -6,12 +6,12 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/04 14:23:37 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/09 11:46:29 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
-from utils import *
+from utils import ft_sqrt, ft_abs, exit_error, get_int
 from color import Color
 
 class Polynomial:
@@ -38,7 +38,7 @@ class Polynomial:
 				self.__solve_no_real_solution(delta)
 		elif self.max_power == 1:
 			print (f"{self.color.green}The solution is:{self.color.none}")
-			sol = -self._c / self._b
+			sol = -float(self._c) / self._b
 			print (f"{self.color.yellow}{sol}{self.color.none}")
 		else:
 			if not self._c:
@@ -48,21 +48,21 @@ class Polynomial:
 
 	def __solve_2_solution(self, delta):
 		print (f"{self.color.green}Discriminant is strictly positive, the two solutions are:{self.color.none}")
-		solution_1 = (-self._b - (delta ** 0.5)) / (2 * self._a)
-		solution_2 = (-self._b + (delta ** 0.5)) / (2 * self._a)
+		solution_1 = (-float(self._b) - ft_sqrt(delta)) / (2 * self._a)
+		solution_2 = (-float(self._b) + ft_sqrt(delta)) / (2 * self._a)
 		print (f"{self.color.yellow}{round(solution_1, 6)}{self.color.none}")
 		print (f"{self.color.yellow}{round(solution_2, 6)}{self.color.none}")
 
 	def __solve_1_solution(self, delta):
 		print (f"{self.color.green}The solution is:{self.color.none}")
-		solution = -self._b / (2 * self._a)
+		solution = -float(self._b) / (2 * self._a)
 		print (f"{self.color.yellow}{solution}{self.color.none}")
 
 	def __solve_no_real_solution(self, delta):
 		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
 		a = (2 * self._a)
-		i = round((ft_abs(delta) ** 0.5) / a, 6)
-		b = -self._b / a
+		i = round((ft_sqrt(ft_abs(delta))) / a, 6)
+		b = -float(self._b) / a
 		solution_1 = f"{b} - {i}i"
 		solution_2 = f"{b} + {i}i"
 		print (f"{self.color.yellow}{solution_1}{self.color.none}")
@@ -74,8 +74,8 @@ class Polynomial:
 		check_validity = self.__check_validity()
 		if neg or fpow or check_validity:
 			exit_error(f"{self.color.red}The polynomial equation is not valid!{self.color.none}")
-		self.core_equation = re.split("(\s)?=(\s)?", self.__equation)[0]
-		self.start_egal = re.split("(\s)?=(\s)?", self.__equation)[3]
+		self.core_equation = re.split(r"(\s)?=(\s)?", self.__equation)[0]
+		self.start_egal = re.split(r"(\s)?=(\s)?", self.__equation)[3]
 		pows = self.__parse_select_pows()
 		self.__reduct_equation(pows)
 		self.__parse_get_degree()
@@ -192,7 +192,6 @@ class Polynomial:
 	def	__reduct_equation(self, powers):
 		reduct_equation = ""
 		first = 0
-		max_p = max(powers)
 		for p in powers:
 			core_power = self.__reduct_power(p, first)
 			if core_power:

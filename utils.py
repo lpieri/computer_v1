@@ -6,13 +6,13 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:44:50 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/04 13:48:19 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/09 11:46:00 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import sys
 import re
-from color import *
+from color import Color
 
 def	ft_abs(nb):
 	if nb < 0:
@@ -27,10 +27,15 @@ def	get_int(power):
 	return nb_of_power
 
 def ft_sqrt(nb):
-	sqrt = 1
-	while sqrt * sqrt < nb:
-		sqrt += 1
-	return sqrt
+	if nb == 0 or nb == 1:
+		return nb
+	calc = nb
+	diff = calc
+	calc = 0.5 * (calc + nb / calc)
+	while calc != diff:
+		diff = calc
+		calc = 0.5 * (calc + nb / calc)
+	return calc
 
 def exit_error(error):
 	print("{prog} - error: {err}".format(prog=sys.argv[0], err=error))
