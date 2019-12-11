@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/09 11:51:48 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/11 14:07:14 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -93,7 +93,7 @@ class Polynomial:
 		return False
 
 	def __parse_get_degree(self):
-		powers = re.findall(r"((\d+)(\s)?\*(\s)?([X|x]\^([\+|\-])?\d))", self.reduct_equation)
+		powers = re.findall(r"((\d+)(\s)?\*(\s)?([X|x]\^([\+|\-])?\d+))", self.reduct_equation)
 		max_power = 0
 		for power in powers:
 			power = re.split(r"((\s+)?\*(\s+)?)", power[0])
@@ -111,7 +111,7 @@ class Polynomial:
 	def __parse_select_pows(self, eq=None):
 		if eq == None:
 			eq = self.__equation
-		powers = re.findall(r"([X|x]\^([\+|\-])?\d)", eq)
+		powers = re.findall(r"([X|x]\^([\+|\-])?\d+)", eq)
 		pows = []
 		for power in powers:
 			p = re.split(r"(\^)", power[0])
@@ -133,6 +133,7 @@ class Polynomial:
 		space = '' if _first == 0 else ' '
 		signe = '' if _first == 0 else '+ '
 		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
+		print (regex_power)
 		core_power = re.search(regex_power, self.core_equation)
 		egal_power = re.search(regex_power, self.start_egal)
 		if core_power:
@@ -152,6 +153,7 @@ class Polynomial:
 				elif reduct_int == 0:
 					return
 				return f"{space}{signe}{reduct_int} * X^{_power_of}"
+			print (core_power)
 			if _first == 0:
 				if core_power_int >= 0:
 					core_power = re.sub(r"(\s)?\+(\s)?", "", core_power)
@@ -186,6 +188,7 @@ class Polynomial:
 					if signe == '-':
 						nb_val = -nb_val
 					new_power_int += nb_val
+				self.__save_int_by_p(new_power_int, p)
 				new_reduct_power = f"{space}{new_power_int} * X^{p}"
 				self.reduct_equation = re.sub(regex_power, '', self.reduct_equation, len(core_power) - 1)
 				self.reduct_equation = re.sub(regex_power, new_reduct_power, self.reduct_equation, 1)
@@ -197,6 +200,7 @@ class Polynomial:
 		first = 0
 		for p in powers:
 			core_power = self.__reduct_power(p, first)
+			print (core_power)
 			if core_power:
 				reduct_equation += "{power}".format(power=core_power)
 			first += 1
