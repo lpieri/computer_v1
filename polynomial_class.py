@@ -6,12 +6,12 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/12 15:52:17 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/13 14:37:44 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
-from utils import ft_sqrt, ft_abs, exit_error, get_int, cmp_power
+from utils import ft_sqrt, ft_abs, exit_error, get_int
 from color import Color
 
 class Polynomial:
@@ -132,8 +132,7 @@ class Polynomial:
 	def __reduct_power(self, _power_of, _first):
 		space = '' if _first == 0 else ' '
 		signe = '' if _first == 0 else '+ '
-		regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power})".format(power=_power_of)
-		print (regex_power)
+		regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}\b)".format(power=_power_of)
 		core_power = re.search(regex_power, self.core_equation)
 		egal_power = re.search(regex_power, self.start_egal)
 		if core_power:
@@ -143,8 +142,6 @@ class Polynomial:
 			self.__save_int_by_p(core_power_int, _power_of)
 			if egal_power:
 				egal_power = egal_power.group()
-				if cmp_power(core_power, egal_power):
-					pass
 				egal_power_int = get_int(egal_power)
 				reduct_int = core_power_int - egal_power_int
 				self.start_egal = re.sub(regex_power.format(power=_power_of), "", self.start_egal, 1)
@@ -155,7 +152,6 @@ class Polynomial:
 				elif reduct_int == 0:
 					return
 				return f"{space}{signe}{reduct_int} * X^{_power_of}"
-			print (core_power)
 			if _first == 0:
 				if core_power_int >= 0:
 					core_power = re.sub(r"(\s)?\+(\s)?", "", core_power)
@@ -178,7 +174,8 @@ class Polynomial:
 		first = 0
 		for p in pows:
 			space = '' if first == 0 else ' '
-			regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power})".format(power=p)
+			signe = '' if first == 0 else '+ '
+			regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}\b)".format(power=p)
 			core_power = re.findall(regex_power, self.reduct_equation)
 			new_power_int = 0
 			if len(core_power) > 1:
@@ -191,7 +188,12 @@ class Polynomial:
 						nb_val = -nb_val
 					new_power_int += nb_val
 				self.__save_int_by_p(new_power_int, p)
-				new_reduct_power = f"{space}{new_power_int} * X^{p}"
+				if new_power_int < 0:
+					new_power_int = new_power_int * -1
+				if signe == '+' and first == 0:
+					new_reduct_power = f"{space}{new_power_int} * X^{p}"
+				else:
+					new_reduct_power = f"{space}{signe} {new_power_int} * X^{p}"
 				self.reduct_equation = re.sub(regex_power, '', self.reduct_equation, len(core_power) - 1)
 				self.reduct_equation = re.sub(regex_power, new_reduct_power, self.reduct_equation, 1)
 			pows.remove(p)
@@ -202,7 +204,6 @@ class Polynomial:
 		first = 0
 		for p in powers:
 			core_power = self.__reduct_power(p, first)
-			print (core_power)
 			if core_power:
 				reduct_equation += "{power}".format(power=core_power)
 			first += 1
