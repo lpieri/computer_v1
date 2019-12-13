@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/13 14:37:44 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/13 14:47:20 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,9 @@ class Polynomial:
 		self.solve_equation()
 
 	def solve_equation(self):
+		self._a = 0 if self._a == None else self._a
+		self._b = 0 if self._b == None else self._b
+		self._c = 0 if self._c == None else self._c
 		if self.max_power > 2:
 			return print (f"{self.color.red}The polynomial degree is stricly greater than 2, I can't solve.{self.color.none}")
 		elif self.max_power == 2:
