@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:44:50 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/09 11:46:00 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/12 15:44:40 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,13 @@ def	ft_abs(nb):
 	if nb < 0:
 		nb = nb * -1
 	return nb
+
+def cmp_power(core, egal):
+	regex_power = r"([x|X]\^\d+)"
+	print ("lol", egal)
+	egal = re.findall(regex_power, egal)[0]
+	print (egal[2])
+	return True
 
 def	get_int(power):
 	regex_int = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)"

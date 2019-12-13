@@ -6,12 +6,12 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/11 14:07:14 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/12 15:52:17 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import re
-from utils import ft_sqrt, ft_abs, exit_error, get_int
+from utils import ft_sqrt, ft_abs, exit_error, get_int, cmp_power
 from color import Color
 
 class Polynomial:
@@ -132,7 +132,7 @@ class Polynomial:
 	def __reduct_power(self, _power_of, _first):
 		space = '' if _first == 0 else ' '
 		signe = '' if _first == 0 else '+ '
-		regex_power = r"((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power}".format(power=_power_of)
+		regex_power = r"(((\s+)?(\+|\-)(\s+)?)?((\d+\.)?\d+)((\s+)?\*(\s+)?)[X|x]\^{power})".format(power=_power_of)
 		print (regex_power)
 		core_power = re.search(regex_power, self.core_equation)
 		egal_power = re.search(regex_power, self.start_egal)
@@ -143,6 +143,8 @@ class Polynomial:
 			self.__save_int_by_p(core_power_int, _power_of)
 			if egal_power:
 				egal_power = egal_power.group()
+				if cmp_power(core_power, egal_power):
+					pass
 				egal_power_int = get_int(egal_power)
 				reduct_int = core_power_int - egal_power_int
 				self.start_egal = re.sub(regex_power.format(power=_power_of), "", self.start_egal, 1)
