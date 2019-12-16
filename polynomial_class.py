@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/13 14:47:20 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/16 12:25:14 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,18 +51,21 @@ class Polynomial:
 
 	def __solve_2_solution(self, delta):
 		print (f"{self.color.green}Discriminant is strictly positive, the two solutions are:{self.color.none}")
+		print (f"{self.color.green}Discriminant value is: {self.color.yellow}{delta}{self.color.none}")
 		solution_1 = (-float(self._b) - ft_sqrt(delta)) / (2 * self._a)
 		solution_2 = (-float(self._b) + ft_sqrt(delta)) / (2 * self._a)
 		print (f"{self.color.yellow}{round(solution_1, 6)}{self.color.none}")
 		print (f"{self.color.yellow}{round(solution_2, 6)}{self.color.none}")
 
 	def __solve_1_solution(self, delta):
-		print (f"{self.color.green}The solution is:{self.color.none}")
+		print (f"{self.color.green}Discrimant is stricly egal to 0, the solution is:{self.color.none}")
+		print (f"{self.color.green}Discriminant value is: {self.color.yellow}{delta}{self.color.none}")
 		solution = -float(self._b) / (2 * self._a)
 		print (f"{self.color.yellow}{solution}{self.color.none}")
 
 	def __solve_no_real_solution(self, delta):
 		print (f"{self.color.green}Discriminant is strictly negative, the two solutions are:{self.color.none}")
+		print (f"{self.color.green}Discriminant value is: {self.color.yellow}{delta}{self.color.none}")
 		a = (2 * self._a)
 		i = round((ft_sqrt(ft_abs(delta))) / a, 6)
 		b = -float(self._b) / a
@@ -193,7 +196,7 @@ class Polynomial:
 				self.__save_int_by_p(new_power_int, p)
 				if new_power_int < 0:
 					new_power_int = new_power_int * -1
-				if signe == '+' and first == 0:
+				if (signe == '+' or new_power_int > 0) and first == 0:
 					new_reduct_power = f"{space}{new_power_int} * X^{p}"
 				else:
 					new_reduct_power = f"{space}{signe} {new_power_int} * X^{p}"
