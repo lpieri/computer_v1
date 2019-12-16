@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/16 12:25:14 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/16 17:14:38 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -194,11 +194,11 @@ class Polynomial:
 						nb_val = -nb_val
 					new_power_int += nb_val
 				self.__save_int_by_p(new_power_int, p)
-				if new_power_int < 0:
-					new_power_int = new_power_int * -1
 				if (signe == '+' or new_power_int > 0) and first == 0:
 					new_reduct_power = f"{space}{new_power_int} * X^{p}"
 				else:
+					if new_power_int < 0:
+						new_power_int = new_power_int * -1
 					new_reduct_power = f"{space}{signe} {new_power_int} * X^{p}"
 				self.reduct_equation = re.sub(regex_power, '', self.reduct_equation, len(core_power) - 1)
 				self.reduct_equation = re.sub(regex_power, new_reduct_power, self.reduct_equation, 1)
