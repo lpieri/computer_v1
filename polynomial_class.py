@@ -6,7 +6,7 @@
 #    By: cpieri <cpieri@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/17 20:18:19 by cpieri            #+#    #+#              #
-#    Updated: 2019/12/16 17:14:38 by cpieri           ###   ########.fr        #
+#    Updated: 2019/12/16 17:25:40 by cpieri           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -213,7 +213,7 @@ class Polynomial:
 			if core_power:
 				reduct_equation += "{power}".format(power=core_power)
 			first += 1
-		if not self._a and not self._b and not self._c:
+		if not self._a and not self._b and not self._c and not reduct_equation:
 			reduct_equation += "0"
 		reduct_equation += " = 0"
 		self.reduct_equation = reduct_equation
